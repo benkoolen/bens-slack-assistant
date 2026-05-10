@@ -1,0 +1,17 @@
+{
+  "name": "slack-pulse-check",
+  "version": "2.0.0",
+  "description": "Weekly AI-powered Slack channel analysis, delivered as a Slack DM",
+  "type": "module",
+  "main": "src/pulse.js",
+  "scripts": {
+    "start": "node src/pulse.js",
+    "test": "node --env-file=.env src/pulse.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,43 @@
+name: Slack Pulse Check
+
+on:
+  # Runs every Sunday at 07:00 UTC (08:00 London winter / 08:00 BST summer)
+  schedule:
+    - cron: "0 7 * * 0"
+
+  # Also allows manual trigger from the GitHub Actions tab
+  workflow_dispatch:
+    inputs:
+      lookback_days:
+        description: "Lookback window in days (overrides default)"
+        required: false
+        default: "7"
+
+jobs:
+  pulse-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run pulse check
+        env:
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SLACK_REPORT_USER_ID: ${{ secrets.SLACK_REPORT_USER_ID }}
+          SLACK_CHANNELS: ${{ secrets.SLACK_CHANNELS }}
+          LOOKBACK_DAYS: ${{ github.event.inputs.lookback_days || secrets.LOOKBACK_DAYS || '7' }}
+          MAX_MESSAGES: ${{ secrets.MAX_MESSAGES || '100' }}
+          FOCUS_LENS: ${{ secrets.FOCUS_LENS || 'agency' }}
+        run: node src/pulse.js
